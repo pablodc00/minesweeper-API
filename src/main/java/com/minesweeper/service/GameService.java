@@ -22,7 +22,8 @@ public class GameService {
     private CellService cellService;    
 	
     public Game startGame(String userName, int rows, int columns, int mines) {
-    	LOG.info("creating new Game");
+    	LOG.info("Creating new Game - userName: {}, rows: {}, columns: {}, mines: {}",
+    			userName, rows, columns, mines);
     	List<Cell> cells = cellService.createCellsForNewGame(rows, columns, mines);
     	Game game = new Game(rows, columns, userName, cells);
     	LOG.info("presisting new Game");

@@ -37,7 +37,7 @@ public class Cell {
     private boolean isRevealed;
     private boolean hasMine;
     @Enumerated(EnumType.STRING)
-    private Flag flag;    
+    private Flag flag;
 
 }
 
