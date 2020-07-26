@@ -9,6 +9,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -39,6 +40,7 @@ public class Game {
     private int rows;
     private int columns;
     private String userName;
+    @OneToMany
     List<Cell> cells;
     private LocalDateTime sartTime;
     private LocalDateTime endTime;
