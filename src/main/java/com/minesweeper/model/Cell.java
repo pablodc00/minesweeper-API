@@ -18,8 +18,8 @@ public class Cell {
 	protected Cell() {}
 
 	public Cell(int row, int column, boolean hasMine) {
-		this.row = row;
-		this.column = column;
+		this.crow = row;
+		this.ccolumn = column;
 		this.isRevealed = false;
 		this.hasMine = hasMine;
 		this.flag = Flag.NONE;
@@ -32,8 +32,8 @@ public class Cell {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private int row;
-    private int column;
+    private int crow;
+    private int ccolumn;
     private boolean isRevealed;
     private boolean hasMine;
     @Enumerated(EnumType.STRING)

@@ -36,7 +36,7 @@ public class CellService {
     	List<Cell> cellsList = new ArrayList<>();
     	Cell cell = null;
     	for (int i = 0; i < rows; i++) {
-    		for (int j = 0; j < rows; i++) {
+    		for (int j = 0; j < columns; j++) {
     			cell = new Cell(i, j, minesPoints.contains(new Point(i, j)));
     			cellRepository.save(cell);
     			cellsList.add(cell);
@@ -61,13 +61,12 @@ public class CellService {
     	Random rand = new Random();
     	Point point = null;
     	for (int i = 0; i < amountOfMines; i++) {
-    		do {
-    			point = new Point(rand.nextInt(rows-1), rand.nextInt(columns-1));
-    			if (!points.contains(point)) {
-    				points.add(point);
-    			}    			
-    		} while (points.contains(point));
-    			
+			point = new Point(rand.nextInt(rows-1), rand.nextInt(columns-1));
+			if (!points.contains(point)) {
+				points.add(point);
+			} else {
+				i--;
+			}    			
     	}	
     	return points;
     }

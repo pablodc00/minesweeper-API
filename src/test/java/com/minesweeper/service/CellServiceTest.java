@@ -21,21 +21,19 @@ import com.minesweeper.model.Cell;
 @SpringBootTest
 @RunWith(SpringRunner.class)
 public class CellServiceTest {
-
 	
     @Autowired
     private CellService pedidoService;
     
     @MockBean
     private CellRepository cellRepositoryMock;
-	
+
+    
 	@Test
 	public void testCreateCellsForNewGame() {
 		int rows = 6;
 		int columns = 9;
 		int mines = 4;
-		Cell cell = null;
-		int minesResult = 0;
 		
 		when(this.cellRepositoryMock.save(any(Cell.class))).thenReturn(any(Cell.class));
 		List<Cell> cellsList = pedidoService.createCellsForNewGame(rows, columns, mines);
