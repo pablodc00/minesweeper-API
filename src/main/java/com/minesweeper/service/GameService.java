@@ -20,7 +20,7 @@ public class GameService {
     private GameRepository gameRepository;
 
     @Autowired
-    private CellService cellService;    
+    private CellService cellService;
 	
     /**
      * Start a new Game
@@ -48,6 +48,7 @@ public class GameService {
      * @return List of adjacent cells
      */
     public List<Cell> getAdjacentCells(Game game, Cell cell) {
+    	//TODO use cache
     	List<Cell> adjacents = game.getCells()
     			.stream()
     			.filter(c -> 
@@ -64,4 +65,44 @@ public class GameService {
     	return adjacents;
     }
 
+    
+    /**
+     * Given a game, reveal all cells
+     */
+    private void revealAllCells(Game game) {
+    	List<Cell> adjacentCells =  null;
+    	
+    	List<Cell> cells = game.getCells();
+    	for (Cell cell : cells) {
+			if (!cell.isRevealed()) {
+				cell.setRevealed(true);
+				adjacentCells = getAdjacentCells(game, cell);
+				cellService.setAmountOfAdjacentMines(cell, adjacentCells);
+			}
+		}
+    }
+    
+    
+    /**
+     * Reveal a cell following MinesWeeper rules:
+     * When a cell with no adjacent mines is revealed, all adjacent squares will be revealed (and repeat)
+     * Detect when game is over
+     * When a cell with any adjacent mine is revealed, all squares will be revealed
+     * @param game
+     * @param cell
+     * @return
+     */
+    public Game revealCell(Game game, Cell cell) {
+    	return null;
+    }
+    
+    /**
+     * Ability to start a new game and preserve/resume the old ones
+     * @param gameId
+     * @param userName
+     * @return
+     */
+    public Game resumeGame(Long gameId, String userName) {
+    	return gameRepository.findByIdAndUserName(gameId, userName);
+    }
 }

@@ -85,5 +85,14 @@ public class CellService {
 		
     	cell.setAmountAdjacentMines(mines);
     	cellRepository.save(cell);    	
-    }    
+    }
+
+    /**
+     * Ability to 'flag' a cell with a question mark or red flag
+     * @param cell
+     */
+    public void updateCell(Cell cell) {
+    	cellRepository.save(cell);
+    }
+    
 }
