@@ -70,4 +70,20 @@ public class CellService {
     	}	
     	return points;
     }
+    
+    /**
+     * Given a Cell and a list of its adjacent cells,
+     * updates amount of adjacent mines in the given cell.
+     * @param cell
+     * @param adjacentCells
+     */
+    public void setAmountOfAdjacentMines(Cell cell, List<Cell> adjacentCells) {
+    	long mines = adjacentCells
+    			.stream()
+    			.filter(c -> c.isHasMine())
+    			.count();
+		
+    	cell.setAmountAdjacentMines(mines);
+    	cellRepository.save(cell);    	
+    }    
 }

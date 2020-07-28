@@ -23,20 +23,21 @@ import com.minesweeper.model.Cell;
 public class CellServiceTest {
 	
     @Autowired
-    private CellService pedidoService;
+    private CellService cellService;
     
     @MockBean
     private CellRepository cellRepositoryMock;
-
     
 	@Test
 	public void testCreateCellsForNewGame() {
+		
+		
 		int rows = 6;
 		int columns = 9;
 		int mines = 4;
 		
 		when(this.cellRepositoryMock.save(any(Cell.class))).thenReturn(any(Cell.class));
-		List<Cell> cellsList = pedidoService.createCellsForNewGame(rows, columns, mines);
+		List<Cell> cellsList = cellService.createCellsForNewGame(rows, columns, mines);
 		
 		List<Cell> cellsMinesList = cellsList.stream()
 				.filter(c -> c.isHasMine() == true)

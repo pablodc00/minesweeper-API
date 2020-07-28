@@ -20,6 +20,7 @@ public class Cell {
 	public Cell(int row, int column, boolean hasMine) {
 		this.crow = row;
 		this.ccolumn = column;
+		this.amountAdjacentMines = 0;
 		this.isRevealed = false;
 		this.hasMine = hasMine;
 		this.flag = Flag.NONE;
@@ -34,6 +35,7 @@ public class Cell {
     private Long id;
     private int crow;
     private int ccolumn;
+    private long amountAdjacentMines;
     private boolean isRevealed;
     private boolean hasMine;
     @Enumerated(EnumType.STRING)
