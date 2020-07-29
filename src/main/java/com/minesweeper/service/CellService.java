@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,17 +36,67 @@ public class CellService {
     	
     	List<Cell> cellsList = new ArrayList<>();
     	Cell cell = null;
+    	boolean flag = false;
     	for (int i = 0; i < rows; i++) {
     		for (int j = 0; j < columns; j++) {
-    			cell = new Cell(i, j, minesPoints.contains(new Point(i, j)));
+    			flag = minesPoints.contains(new Point(i, j));
+    			cell = new Cell(i, j, flag);
     			cellRepository.save(cell);
     			cellsList.add(cell);
     		}
 		}
-    	    	
+
+    	//update amount of mines in adjacen cells
+    	List<Cell> adjacentCellsList = new ArrayList<>();
+    	for (Cell minecell : cellsList) {
+			if (minecell.isHasMine()) {
+				adjacentCellsList = getAdjacentCells(minecell, cellsList);
+				updateAmountOfMinesInAdjacentCells(adjacentCellsList);
+			}
+		}
+    	
     	return cellsList;
     }
 
+    
+    /**
+     * Given a cell containing a mine and a list of adjacent cells,
+     * update the amount of adjacent mines in each cell of the list.
+     * @param adjacentCellsList
+     */
+    private void updateAmountOfMinesInAdjacentCells(List<Cell> adjacentCellsList) {
+    	for (Cell adjcell : adjacentCellsList) {
+			adjcell.setAmountAdjacentMines(adjcell.getAmountAdjacentMines()+1);
+			cellRepository.save(adjcell);
+		}
+    }
+    
+    
+    /**
+     * Given a cell and a list of all cells, return a list o adjacent cells
+     * for the given cell.
+     * @param cell
+     * @param cellsList
+     * @return List of adjacents cells
+     */
+    public List<Cell> getAdjacentCells(Cell cell, List<Cell> cellsList) {
+    	//TODO use cache
+    	List<Cell> adjacents = cellsList
+    			.stream()
+    			.filter(c -> 
+    				(c.getCrow() == cell.getCrow()-1 && c.getCcolumn() == cell.getCcolumn()-1) ||
+    				(c.getCrow() == cell.getCrow()-1 && c.getCcolumn() == cell.getCcolumn())   ||
+    				(c.getCrow() == cell.getCrow()-1 && c.getCcolumn() == cell.getCcolumn()+1) ||
+    				(c.getCrow() == cell.getCrow() && c.getCcolumn() == cell.getCcolumn()-1) ||
+    				(c.getCrow() == cell.getCrow() && c.getCcolumn() == cell.getCcolumn()+1) ||
+    				(c.getCrow() == cell.getCrow()+1 && c.getCcolumn() == cell.getCcolumn()-1) ||
+    				(c.getCrow() == cell.getCrow()+1 && c.getCcolumn() == cell.getCcolumn()) ||
+    				(c.getCrow() == cell.getCrow()+1 && c.getCcolumn() == cell.getCcolumn()+1))
+    			.collect(Collectors.toList());
+    	
+    	return adjacents;
+    }    
+    
     /**
      * Generate random points where mines will be placed
      * @param rows

@@ -1,7 +1,7 @@
 package com.minesweeper.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.minesweeper.dao.GameRepository;
 import com.minesweeper.model.Cell;
 import com.minesweeper.model.Game;
+import com.minesweeper.model.Game.Status;
 
 @Service
 public class GameService {
@@ -48,36 +49,19 @@ public class GameService {
      * @return List of adjacent cells
      */
     public List<Cell> getAdjacentCells(Game game, Cell cell) {
-    	//TODO use cache
-    	List<Cell> adjacents = game.getCells()
-    			.stream()
-    			.filter(c -> 
-    				(c.getCrow() == cell.getCrow()-1 && c.getCcolumn() == cell.getCcolumn()-1) ||
-    				(c.getCrow() == cell.getCrow()-1 && c.getCcolumn() == cell.getCcolumn())   ||
-    				(c.getCrow() == cell.getCrow()-1 && c.getCcolumn() == cell.getCcolumn()+1) ||
-    				(c.getCrow() == cell.getCrow() && c.getCcolumn() == cell.getCcolumn()-1) ||
-    				(c.getCrow() == cell.getCrow() && c.getCcolumn() == cell.getCcolumn()+1) ||
-    				(c.getCrow() == cell.getCrow()+1 && c.getCcolumn() == cell.getCcolumn()-1) ||
-    				(c.getCrow() == cell.getCrow()+1 && c.getCcolumn() == cell.getCcolumn()) ||
-    				(c.getCrow() == cell.getCrow()+1 && c.getCcolumn() == cell.getCcolumn()+1))
-    			.collect(Collectors.toList());
-    	
-    	return adjacents;
+    	return cellService.getAdjacentCells(cell, game.getCells());
     }
 
     
     /**
      * Given a game, reveal all cells
      */
-    private void revealAllCells(Game game) {
-    	List<Cell> adjacentCells =  null;
-    	
+    private void revealAllCells(Game game) {    	
     	List<Cell> cells = game.getCells();
     	for (Cell cell : cells) {
 			if (!cell.isRevealed()) {
 				cell.setRevealed(true);
-				adjacentCells = getAdjacentCells(game, cell);
-				cellService.setAmountOfAdjacentMines(cell, adjacentCells);
+				cellService.updateCell(cell);
 			}
 		}
     }
@@ -93,8 +77,36 @@ public class GameService {
      * @return
      */
     public Game revealCell(Game game, Cell cell) {
-    	return null;
+    	//already revealed
+    	if (cell.isRevealed())
+    		return game;
+    	
+    	//cell contains mine
+    	if (cell.isHasMine()) {
+    		this.revealAllCells(game);
+    		game.setStatus(Status.LOST);
+    		game.setEndTime(LocalDateTime.now());
+    		gameRepository.save(game);
+    		return game;
+    	}
+
+    	cell.setRevealed(true);
+    	cellService.updateCell(cell);
+    	
+    	
+    	// if there is no mines in adjacent cells we reveal adjacen cells
+    	if (cell.getAmountAdjacentMines() == 0) {
+	    	List<Cell> adjacentCells = getAdjacentCells(game, cell);
+	    	for (Cell adjcell : adjacentCells) {
+				if (!adjcell.isRevealed() && !adjcell.isHasMine()) {
+					revealCell(game, adjcell);
+				}
+			}
+    	}
+    	
+    	return game;
     }
+
     
     /**
      * Ability to start a new game and preserve/resume the old ones
