@@ -42,4 +42,3 @@ public class Cell {
     private Flag flag;
 
 }
-

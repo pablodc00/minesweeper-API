@@ -42,7 +42,7 @@ public abstract class ParentTest {
     	cell = new Cell(2, 2, false);
     	mockCellsList.add(cell);
     	
-    	mockGame = new Game(3, 3, "dummy", mockCellsList);
+    	mockGame = new Game(3, 3, 2, "dummy", mockCellsList);
     }    
 	
 }

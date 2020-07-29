@@ -21,10 +21,11 @@ public class Game {
 
 	protected Game() {}
 	
-	public Game(int rows, int columns, String username, List<Cell> cells) {
+	public Game(int rows, int columns, int numberOfMines, String username, List<Cell> cells) {
 		this.rows = rows;
 		this.columns = columns;
 		this.userName = username;
+		this.numberOfMines = numberOfMines;
 		this.cells = cells;
 		this.sartTime = LocalDateTime.now();
 		this.status = Status.IN_PROGRESS;
@@ -40,6 +41,7 @@ public class Game {
     private int rows;
     private int columns;
     private String userName;
+    private int numberOfMines;
     @OneToMany
     List<Cell> cells;
     private LocalDateTime sartTime;

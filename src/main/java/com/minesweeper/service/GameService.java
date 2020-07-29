@@ -2,6 +2,7 @@ package com.minesweeper.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,8 +35,9 @@ public class GameService {
     public Game startGame(String userName, int rows, int columns, int mines) {
     	LOG.info("Creating new Game - userName: {}, rows: {}, columns: {}, mines: {}",
     			userName, rows, columns, mines);
+    	
     	List<Cell> cells = cellService.createCellsForNewGame(rows, columns, mines);
-    	Game game = new Game(rows, columns, userName, cells);
+    	Game game = new Game(rows, columns, mines, userName, cells);
     	LOG.info("persisting new Game");
     	gameRepository.save(game);
     	return game;
@@ -116,5 +118,20 @@ public class GameService {
      */
     public Game resumeGame(Long gameId, String userName) {
     	return gameRepository.findByIdAndUserName(gameId, userName);
+    }
+    
+    
+    /**
+     * Given a Game, a number of row and a number of column, returns a Cell object
+     * @param game
+     * @param row
+     * @param cell
+     * @return a cell if exist, empty cell if not
+     */
+    public Optional<Cell> getCellByRowAndColumn(Game game, int row, int column) {
+    	return game.getCells()
+    		.stream()
+    		.filter(c -> c.getCrow()==row && c.getCcolumn()==column)
+    		.findFirst();
     }
 }
