@@ -134,4 +134,13 @@ public class GameService {
     		.filter(c -> c.getCrow()==row && c.getCcolumn()==column)
     		.findFirst();
     }
+    
+    /**
+     * Given an user name, returns a list of its games
+     * @param userName
+     * @return list of games
+     */ 
+    public List<Game> getGamesPerUser(String userName) {
+    	return gameRepository.findByUserName(userName);
+    }
 }
