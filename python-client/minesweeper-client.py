@@ -38,7 +38,7 @@ print(r.status_code)
 
 
 
-#print("get games for user pablo")
+print("get games for user pablo")
 url = 'http://localhost:8080/minesweeper/v1/getgames?userName=pablo'
 r = requests.get(url, headers=headers)
 print(r.status_code)
@@ -46,7 +46,7 @@ print(r.status_code)
 
 
 
-#print("play game 2")
+print("play game 2")
 data = r.json()
 payload = data[1]
 
@@ -58,7 +58,7 @@ print(r.status_code)
 
 
 
-#print("keep playing game 2")
+print("keep playing game 2")
 url = 'http://localhost:8080/minesweeper/v1/getgames?userName=pablo'
 r = requests.get(url, headers=headers)
 
@@ -74,7 +74,7 @@ print(r.status_code)
 
 
 
-#print("keep playing game 2")
+print("keep playing game 2")
 url = 'http://localhost:8080/minesweeper/v1/getgames?userName=pablo'
 r = requests.get(url, headers=headers)
 
@@ -89,7 +89,7 @@ print(r.status_code)
 
 
 
-#print("mark a cell in game 1 from user pablo")
+print("mark a cell in game 1 from user pablo")
 url = 'http://localhost:8080/minesweeper/v1/getgames?userName=pablo'
 r = requests.get(url, headers=headers)
 
