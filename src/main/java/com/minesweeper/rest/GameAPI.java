@@ -2,6 +2,7 @@ package com.minesweeper.rest;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.minesweeper.model.Cell;
 import com.minesweeper.model.Game;
+import com.minesweeper.service.CellService;
 import com.minesweeper.service.GameService;
 
 @RestController
@@ -28,6 +30,9 @@ public class GameAPI {
 		
     @Autowired
     private GameService gameService;
+    
+    @Autowired
+    private CellService cellService;    
 
     @PostMapping("/startgame")
     public ResponseEntity<Game> startgame(@RequestBody Game game) {    	
@@ -46,8 +51,10 @@ public class GameAPI {
     public ResponseEntity<Game> revealCell(@RequestBody Game game, @PathVariable("row") int row, 
     		@PathVariable("column") int column) {
 
-        Optional<Cell> optcell = gameService.getCellByRowAndColumn(game, row, column);
-        		        
+		System.out.println("Game " + game.getId() + ", " + game.getUserName());
+		LOG.info("Game " + game.getId() + ", " + game.getUserName());
+		
+        Optional<Cell> optcell = gameService.getCellByRowAndColumn(game, row, column);        		        
         if (!optcell.isPresent()) {
         	LOG.warn("Not exists Cell for row: {} and column: {}", row, column);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -83,5 +90,37 @@ public class GameAPI {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		return ResponseEntity.ok(games);
+	}
+	
+	@PutMapping("/markcell/{gameId}/{row}/{column}/{mark}")
+	public ResponseEntity<Game> markCell(@PathVariable("gameId") Long gameId, @PathVariable("row") int row,
+			@PathVariable("column") int column, @PathVariable("mark") Cell.Flag mark) {
+		
+		// find game
+		Optional<Game> optgame = gameService.getGameById(gameId);
+		if (!optgame.isPresent()) {
+			LOG.warn("Not games found for gameId: {}", gameId);
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+
+		// find cell
+		Game game = optgame.get();
+		Optional<Cell> optcell = gameService.getCellByRowAndColumn(game, row, column);
+        if (!optcell.isPresent()) {
+        	LOG.warn("Not exists Cell for row: {} and column: {}", row, column);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+		
+        Cell cell = optcell.get();
+        cell.setFlag(mark);
+        cellService.updateCell(cell);
+        
+        game.getCells()
+        	.stream()
+        	.filter(c -> c.getId()==cell.getId())
+        	.peek(c -> c.setFlag(mark))
+        	.collect(Collectors.toList());
+		
+        return ResponseEntity.ok(optgame.get());
 	}
 }

@@ -143,4 +143,8 @@ public class GameService {
     public List<Game> getGamesPerUser(String userName) {
     	return gameRepository.findByUserName(userName);
     }
+
+    public Optional<Game> getGameById(Long gameId) {
+    	return gameRepository.findById(gameId);
+    }
 }
